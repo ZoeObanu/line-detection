@@ -3,15 +3,11 @@ import numpy as np
  
 # define a video capture object 
 vid = cv2.VideoCapture(0)
-x1sum = y1sum1 = 1000
-x2sum = y2sum = y1sum2 = 0
   
 while(True): 
       
     # Capture the video frame by frame 
     ret, frame = vid.read()
-
-
 
     #convert to grayscale
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
@@ -32,7 +28,7 @@ while(True):
     # Run Hough on edge detected image
     # Output "lines" is an array containing endpoints of detected line segments
 
-
+    # code for mask taken from stack overflow
     # create a mask
     mask = np.zeros(frame.shape[:2], np.uint8)
     mask[100:600, 300:1000] = 255
@@ -43,7 +39,7 @@ while(True):
     lines = cv2.HoughLinesP(masked_img, rho, theta, threshold, np.array([]),
                         min_line_length, max_line_gap)
     
-    x1sum = y1sum = x2sum = y2sum = x1total = y1total = x2total = y2total = 0
+    x1sum = y1sum = x2sum = y2sum = total = 0
 
     for line in lines:
         for x1,y1,x2,y2 in line:
@@ -55,17 +51,15 @@ while(True):
         x2sum += x2
         y2sum += y2
 
-        x1total += 1
-        y1total += 1
-        x2total += 1
-        y2total += 1
+        total += 1
         
-
-    cv2.line(line_image,(int(x1sum/x1total),int(y1sum/y1total)),(int(x2sum/x2total),int(y2sum/y2total)),(0,0,255),10)
+    # Drawing the center line with the slope
+    cv2.line(line_image,(int(x1sum/total),int(y1sum/total)),(int(x2sum/total),int(y2sum/total)),(0,0,255),10)
 
     # Draw the lines on the  image
     lines_edges = cv2.addWeighted(frame, 0.8, line_image, 1, 0)
 
+    # from geeks for geeks
     cv2.rectangle(lines_edges, (300,100), (1000,600), (0,0,0), 5) 
 
 
